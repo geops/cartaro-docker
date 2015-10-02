@@ -65,5 +65,9 @@ RUN wget -q http://ftp.drupal.org/files/projects/cartaro-7.x-1.8-core.tar.gz \
     && ln -s /cartaro /var/www/cartaro \
     && service apache2 restart
 
+VOLUME /var/lib/postgresql/9.3/main
+VOLUME /var/lib/tomcat7/webapps/geoserver/data
+VOLUME /cartaro/sites/default/files
+
 COPY run_cartaro.sh /run_cartaro.sh
 CMD ./run_cartaro.sh

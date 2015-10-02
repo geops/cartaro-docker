@@ -40,7 +40,7 @@ RUN service postgresql start \
 
 # Configure Apache
 COPY cartaro.conf /etc/apache2/sites-available/cartaro.conf
-RUN a2enmod rewrite && a2enmod proxy && a2enmod proxy_http && a2dissite 000-default && a2ensite cartaro
+RUN echo 'Listen 8000' >> /etc/apache2/ports.conf && a2enmod rewrite && a2enmod proxy && a2enmod proxy_http && a2dissite 000-default && a2ensite cartaro
 
 # Download and install Cartaro
 RUN wget -q http://ftp.drupal.org/files/projects/cartaro-7.x-1.8-core.tar.gz \
@@ -54,7 +54,7 @@ RUN wget -q http://ftp.drupal.org/files/projects/cartaro-7.x-1.8-core.tar.gz \
        install_configure_form.cartaro_demo=1 \
        install_configure_form.geoserver_workspace=cartaro \
        install_configure_form.geoserver_namespace=cartaro \
-       install_configure_form.geoserver_url=http://localhost:8080/geoserver \
+       install_configure_form.geoserver_url=http://localhost:8000/geoserver \
        --account-name=admin \
        --account-pass=geoserver \
        --site-name="Cartaro Demo" \
@@ -63,8 +63,7 @@ RUN wget -q http://ftp.drupal.org/files/projects/cartaro-7.x-1.8-core.tar.gz \
        --yes \
     && chown -R www-data.www-data /cartaro/sites/default/files \
     && ln -s /cartaro /var/www/cartaro \
-    && service apache2 restart \
-    && php -d sendmail_path=/bin/true /drush/drush.php vset geoserver_url http://localhost:8000/geoserver
+    && service apache2 restart
 
 COPY run_cartaro.sh /run_cartaro.sh
 CMD ./run_cartaro.sh
